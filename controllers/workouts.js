@@ -40,6 +40,25 @@ router.get('/:workoutId', async (req, res) => {
     }
 });
 
+//PUT /workouts/:workoutId -Update
+router.put('/:workoutId', async (req, res) => {
+    try {
+        const workout = await Workout.findById(req.params.workoutId);
+        if (!workout.author.equals(req.user._id)) {
+            return res.status(403).send("You can only update your own Workouts!")
+        };
+        const updatedWorkout = await Workout.findByIdAndUpdate(
+            req.params.workoutId,
+            req.body,
+            { new: true }
+        );
+        updatedWorkout._doc.author = req.user;
+        res.status(200).json(updatedWorkout);
+    }catch (err) {
+        res.status(500).json({ err: err.message });
+    }
+});
+
 
 
 module.exports = router;
