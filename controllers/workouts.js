@@ -16,7 +16,19 @@ router.post('/', async (req, res) => {
     }catch (err) {
         res.status(500).json({err: err.message});
     }
-})
+});
+
+//GET /workouts
+router.get('/', async (req, res) => {
+    try {
+        const workouts = await Workout.find({})
+        .populate('author')
+        .sort({createdAt: 'desc'});
+        res.status(200).json(workouts)
+    }catch (err) {
+        res.status(500).json({err: err.message})
+    }
+});
 
 
 
