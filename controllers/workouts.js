@@ -30,10 +30,13 @@ router.get('/', async (req, res) => {
     }
 });
 
-//GET /workouts/:workoutId -Show
+//GET /workouts/:workoutId - Show
 router.get('/:workoutId', async (req, res) => {
     try { 
-        const workout = await Workout.findById(req.params.workoutId).populate('author');
+        const workout = await Workout.findById(req.params.workoutId).populate([
+            'author',
+            'comments.author',
+        ]);
         res.status(200).json(workout)
     }catch (err) {
         res.status(500).json({err: err.message})
@@ -73,7 +76,7 @@ router.delete('/:workoutId', async (req, res) => {
     }
 });
 
-//POST /workouts/:workoutId/comments
+//POST /workouts/:workoutId/comments - Post a Comment
 router.post('/:workoutId/comments', async ( req, res) => {
     try {
         req.body.author = req.user._id;
@@ -88,6 +91,22 @@ router.post('/:workoutId/comments', async ( req, res) => {
     }
 });
 
+//PUT /workouts/:workoutId/comments/:commentsId - Update a comment
+router.put('/:workoutId/comments/:commentId', async (req, res) => {
+    try {
+        const workout = await Workout.findById(req.params.workoutId);
+        const comment = workout.comments.id(req.params.commentId);
+
+        if (comment.author.toString() !== req.user._id) {
+            return res.status(403).json({message: "You are not authorized to edit this comment"})
+        }
+        comment.text = req.body.text;
+        await workout.save();
+        res.status(200).json({ message: "Comment updated succesfully!"})
+    }catch (err) {
+        res.status(500).json({err: err.message})
+    }
+});
 
 
 module.exports = router;
