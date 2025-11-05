@@ -73,6 +73,21 @@ router.delete('/:workoutId', async (req, res) => {
     }
 });
 
+//POST /workouts/:workoutId/comments
+router.post('/:workoutId/comments', async ( req, res) => {
+    try {
+        req.body.author = req.user._id;
+        const workout = await Workout.findById(req.params.workoutId);
+        workout.comments.push(req.body);
+        await workout.save();
+        const newComment = workout.comments[workout.comments.length - 1];
+        newComment._doc.author = req.user
+        res.status(200).json(newComment);
+    }catch (err) {
+        res.status(500).json({err: err.message});
+    }
+});
+
 
 
 module.exports = router;

@@ -25,7 +25,7 @@ const workoutSchema = new mongoose.Schema (
         },
           author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
           exercises: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Exercise'}],
-          comment: [commentSchema],
+          comments: [commentSchema],
     },
     { timestamps: true }
 );
