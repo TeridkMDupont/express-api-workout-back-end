@@ -1,6 +1,7 @@
 const express = require('express');
 const verifyToken = require('../middleware/verify-token');
-const Workout = require('../models/workout')
+const Workout = require('../models/workout');
+const Exercise = require('../models/exercise');
 const router = express.Router();
 
 router.use(verifyToken);
@@ -105,6 +106,19 @@ router.put('/:workoutId/comments/:commentId', async (req, res) => {
         res.status(200).json({ message: "Comment updated succesfully!"})
     }catch (err) {
         res.status(500).json({err: err.message})
+    }
+});
+
+
+//POST /workouts/exercises - Crceate an Exercise 
+router.post('/exercises', async (req, res) => {
+    try {
+        req.body.author = req.user._id;
+        const exercise = await Exercise.create(req.body)
+        exercise._doc.author = req.user;
+        res.status(201).json(exercise)
+    }catch (err) {
+        res.status(500).json({ err: err.message})
     }
 });
 

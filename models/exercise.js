@@ -15,8 +15,10 @@ const exerciseSchema = new mongoose.Schema (
         },
         description: {
             type: String
-        }
-    }
+        },
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    },
+    { timestamps: true}
 );
 
 const Exercise = mongoose.model("Exercise", exerciseSchema);
