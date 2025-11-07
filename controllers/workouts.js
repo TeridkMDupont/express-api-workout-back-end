@@ -1,7 +1,7 @@
 const express = require('express');
 const verifyToken = require('../middleware/verify-token');
 const Workout = require('../models/workout');
-const Exercise = require('../models/exercise');
+
 const router = express.Router();
 
 router.use(verifyToken);
@@ -19,6 +19,8 @@ router.post('/', async (req, res) => {
     }
 });
 
+
+
 //GET /workouts -Index
 router.get('/', async (req, res) => {
     try {
@@ -31,12 +33,15 @@ router.get('/', async (req, res) => {
     }
 });
 
+
+
 //GET /workouts/:workoutId - Show
 router.get('/:workoutId', async (req, res) => {
     try { 
         const workout = await Workout.findById(req.params.workoutId).populate([
             'author',
             'comments.author',
+            'exercises'
         ]);
         res.status(200).json(workout)
     }catch (err) {
@@ -110,17 +115,7 @@ router.put('/:workoutId/comments/:commentId', async (req, res) => {
 });
 
 
-//POST /workouts/exercises - Crceate an Exercise 
-router.post('/exercises', async (req, res) => {
-    try {
-        req.body.author = req.user._id;
-        const exercise = await Exercise.create(req.body)
-        exercise._doc.author = req.user;
-        res.status(201).json(exercise)
-    }catch (err) {
-        res.status(500).json({ err: err.message})
-    }
-});
+
 
 
 module.exports = router;
